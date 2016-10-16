@@ -58,11 +58,16 @@ if __name__ == '__main__':
     for sym,shares in final_portfolio.holdings.items():
         print('Symbol:',sym,'Number of shares:',shares)
     # TODO: output current portfolio value
+    yesterday = dt.date.today() - dt.timedelta(1)
+    while yesterday.weekday() > 4:
+	yesterday -= dt.timedelta(days = 1)
+    (final_value, full_prices) = final_portfolio.calculateValue(yesterday, {})
+    print('Final Value:', final_value)
     # stringify dates
     string_dates = [date.to_datetime().strftime('%Y-%m-%d') for date in cpy_bizdates]
 
     # export to CSV file
-    my_csv = open('values.csv','w',newline='\n')
+    my_csv = open('values.csv','w')
     #valuelist = {value for date,value in sorted(values).items()}
     #data = zip(string_dates, valuelist)
     a = csv.writer(my_csv)

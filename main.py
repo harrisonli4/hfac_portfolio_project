@@ -11,7 +11,7 @@ import copy
 if __name__ == '__main__':
     # read in transactions file and construct list of transactions
     transactions = []
-    f = open('transactions_clean_2.csv', 'r')
+    f = open('2015_transactions.csv', 'r')
     lines = f.readlines()
     for line in lines:
         transactions.append(transaction.Transaction(line))

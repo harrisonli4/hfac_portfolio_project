@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # TODO: output current portfolio value
     yesterday = dt.date.today() - dt.timedelta(1)
     while yesterday.weekday() > 4:
-	yesterday -= dt.timedelta(days = 1)
+        yesterday -= dt.timedelta(days = 1)
     (final_value, full_prices) = final_portfolio.calculateValue(yesterday, {})
     print('Final Value:', final_value)
     # stringify dates

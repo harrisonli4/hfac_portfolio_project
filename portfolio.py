@@ -6,16 +6,7 @@ import datetime
 from dateutil import parser
 import pprint
 
-def try5times(func, tries = 0):
-    if tries >= 5:
-        raise "We fucked up"
-    try:
-        return func()
-    except:
-        tries += 1
-        try5times(func, tries)
 
-# TODO: modify to allow initial portfolio to contain stocks
 class Portfolio:
     """
     t = type Transaction
@@ -41,7 +32,7 @@ class Portfolio:
                         print("Shorting stock: {}".format(t.symbol) if t.direction == -1 else "Setting stock: {}".format(t.symbol))
                 else:
                     self.holdings['cash'] += t.amt
-            else:
+            else: #this loop will never be activated with our current code
                 print(t.direction, t.quantity, t.date)
                 self.holdings = {}
                 qty = t.direction * t.quantity
@@ -58,8 +49,9 @@ class Portfolio:
             start = open('2015_start.csv', 'r')
             start_lines = start.readlines()
             for starts in start_lines:
-                info = starts.split(',')
+                info = starts.split(',') #change to ints here
                 self.holdings[info[0]] = float(info[1])
+            # set the start date manually here
             self.start_date = self.date = parser.parse('12/31/2014')
             print(self.holdings)
 

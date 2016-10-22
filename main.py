@@ -19,12 +19,11 @@ if __name__ == '__main__':
 
     # turn transaction objects into portfolio objects
     portfolios = [] # list of portfolio objects for each date
-    init_cash = 32370.68
     init_port = Portfolio();
     portfolios.append(init_port);
     for t in transactions:
         if len(portfolios) == 0:
-            portfolios.append(Portfolio(t, last_portfolio=init_port))
+            portfolios.append(Portfolio(t=None, last_portfolio=init_port))
         else:
             portfolios.append(Portfolio(t, portfolios[-1]))
 

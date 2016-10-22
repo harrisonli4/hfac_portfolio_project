@@ -50,39 +50,46 @@ class Portfolio:
             start_lines = start.readlines()
             for starts in start_lines:
                 info = starts.split(',') #change to ints here
-                self.holdings[info[0]] = float(info[1])
+                if info[0] == 'cash':
+                    self.holdings['cash'] = float(info[1])
+                else:
+                    self.holdings[info[0]] = int(info[1])
             # set the start date manually here
-            self.start_date = self.date = parser.parse('12/31/2014')
+            self.start_date = parser.parse('12/31/2014')
             print(self.holdings)
 
+
+    # storage for prices from yahoo finance
+    # Prices is a dictionary of dictionaries; each inner dictionary consists of (date, value) pairs for a ticker
+    prices = {}
 
     """
     Given date, calculate the value of the portfolio. Verifies that the
     date is after the start_date. 
     """
 
-    def calculateValue(self, date, prices):
+    def calculateValue(self, date):
         value = 0.
         date = date.strftime('%Y-%m-%d')
         for sym,qty in self.holdings.items():
             if sym == 'cash':
                 value += qty
             else:
-                if sym not in prices:
+                if sym not in Portfolio.prices:
                     stock = Share(sym)
                     # get prices until today
                     string_today = datetime.date.today().strftime('%Y-%m-%d')
-                    print(string_today)
+                    # print(string_today, date, sym)
                     price_list = stock.get_historical(date, string_today)
                     # pprint.PrettyPrinter(depth = 6).pprint(price_list)
-                    # Prices is a dictionary of dictionaries; each inner dictionary consists of (date, value) pairs for a ticker
-                    prices[sym] = {item['Date']: float(item['Close']) for item in price_list}
+                    Portfolio.prices[sym] = {item['Date']: float(item['Close']) for item in price_list}
 
                 # find price for the date of interest
-                if date in prices[sym]:
-                    close_price = prices[sym][date]
+                if date in Portfolio.prices[sym]:
+                    close_price = Portfolio.prices[sym][date]
                     value += close_price * qty
                 else:
+                    # I still don't know why this would ever happen. What's going on?
                     print(date, sym)
-                    return (None, None)
-        return (value, prices)
+                    return None
+        return value

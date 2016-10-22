@@ -22,18 +22,14 @@ if __name__ == '__main__':
     init_port = Portfolio();
     portfolios.append(init_port);
     for t in transactions:
-        if len(portfolios) == 0:
-            portfolios.append(Portfolio(t=None, last_portfolio=init_port))
-        else:
-            portfolios.append(Portfolio(t, portfolios[-1]))
+        portfolios.append(Portfolio(t, portfolios[-1]))
 
 
     # get all trading days as a list
     bizdates = pd.bdate_range(portfolios[0].start_date, parser.parse('1/1/2016'))
     print(bizdates)
-    # storage for prices from yahoo finance
-    prices = {}
 
+    
     # get portfolio values
     portfolios_length = len(portfolios)
     idx = 0
@@ -43,17 +39,17 @@ if __name__ == '__main__':
         # advance to next portfolio on dates with transactions
         if idx + 1 < portfolios_length and portfolios[idx + 1].start_date <= date.to_datetime():
             idx += 1
-        (value, new_prices) = portfolios[idx].calculateValue(date, prices)
-        if (value, new_prices) != (None, None):
+        value = portfolios[idx].calculateValue(date)
+        if value != None:
             values[date.to_datetime().strftime('%Y-%m-%d')] = value
-            prices = new_prices
         # if portfolio doesn't exist on that day, remove date from bizdates
         else: 
             cpy_bizdates = cpy_bizdates.drop(date)
+
     print('Number of values:', len(values))
     print('Number of dates:', len(cpy_bizdates))
 
-    print('Current holdings:')
+    print('Latest holdings:')
     final_portfolio = portfolios[-1]
     for sym,shares in final_portfolio.holdings.items():
         print('Symbol:',sym,'Number of shares:',shares)

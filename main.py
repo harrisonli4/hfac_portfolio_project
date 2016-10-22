@@ -3,6 +3,7 @@ import transaction
 from portfolio import Portfolio
 import pandas as pd
 import datetime as dt
+from dateutil import parser
 import csv 
 import copy
 
@@ -18,17 +19,18 @@ if __name__ == '__main__':
 
     # turn transaction objects into portfolio objects
     portfolios = [] # list of portfolio objects for each date
-    init_cash = 10000 
+    init_cash = 32370.68
+    init_port = Portfolio();
+    portfolios.append(init_port);
     for t in transactions:
         if len(portfolios) == 0:
-            # TODO: Allow first portfolio to contain stocks
-            portfolios.append(Portfolio(t, init_cash = init_cash))
+            portfolios.append(Portfolio(t, last_portfolio=init_port))
         else:
             portfolios.append(Portfolio(t, portfolios[-1]))
 
 
     # get all trading days as a list
-    bizdates = pd.bdate_range(portfolios[0].start_date, dt.date.today() - dt.timedelta(days=1))
+    bizdates = pd.bdate_range(portfolios[0].start_date, parser.parse('1/1/2016'))
     print(bizdates)
     # storage for prices from yahoo finance
     prices = {}
@@ -52,26 +54,31 @@ if __name__ == '__main__':
     print('Number of values:', len(values))
     print('Number of dates:', len(cpy_bizdates))
 
-    # TODO: output current holdings to CSV
     print('Current holdings:')
     final_portfolio = portfolios[-1]
     for sym,shares in final_portfolio.holdings.items():
         print('Symbol:',sym,'Number of shares:',shares)
-    # TODO: output current portfolio value
-    yesterday = dt.date.today() - dt.timedelta(1)
-    while yesterday.weekday() > 4:
-        yesterday -= dt.timedelta(days = 1)
-    (final_value, full_prices) = final_portfolio.calculateValue(yesterday, {})
-    print('Final Value:', final_value)
+
+    currents = open('current_holdings.csv','w')
+    current = csv.writer(currents)
+    for sym,shares in final_portfolio.holdings.items():
+        current.writerow([sym,shares])
+    currents.close()
+
     # stringify dates
-    string_dates = [date.to_datetime().strftime('%Y-%m-%d') for date in cpy_bizdates]
+    # string_dates = [date.to_datetime().strftime('%Y-%m-%d') for date in cpy_bizdates]
 
     # export to CSV file
     my_csv = open('values.csv','w')
     #valuelist = {value for date,value in sorted(values).items()}
     #data = zip(string_dates, valuelist)
+
     a = csv.writer(my_csv)
     for date,value in values.items():
+        if date == '2015-12-31':
+            print ("End value:",value)
+        if date == '2014-12-31':
+            print ("Start value:",value)
         a.writerow([date,value])
     my_csv.close()
 

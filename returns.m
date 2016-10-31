@@ -1,5 +1,4 @@
 data = load('values.csv');
-dates = data(:,1);
 portval = data(:,2);
 
 dailyreturns = zeros([length(portval)-1 1]);
@@ -26,7 +25,7 @@ end %calculating simple variance of returns
 
 simplstdv = (nsimplvar/(length(dailylogreturns)-1))^(1/2);
 
-rfr = 0.0186; %risk free rate for October 28, 2016
+rfr = log(1+0.0186)/252; %risk free rate for October 28, 2016
 
 simplsharpe = (meandailyreturn-rfr)/simplstdv;
 

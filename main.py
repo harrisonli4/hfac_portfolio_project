@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
 
     # get all trading days as a list
-    bizdates = pd.bdate_range(portfolios[0].start_date, parser.parse('1/1/2016'))
+    bizdates = pd.bdate_range(portfolios[0].start_date, parser.parse('11/1/2016'))
     print(bizdates)
 
     
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     a = csv.writer(my_csv)
     for date,value in values.items():
-        if date == '2015-12-31':
+        if date == '2016-11-01':
             print ("End value:",value)
         if date == '2014-12-31':
             print ("Start value:",value)

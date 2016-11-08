@@ -86,7 +86,22 @@ treynor = (yearlyreturns - rfr)/beta
 
 %%
 
-plot(dates, portval);
-xlabel('Date');
-ylabel('Portfolio Value');
-title('HFAC Portfolio Value During 2015');
+plot(dates, portvalues);
+x = xlabel('Date');
+y = ylabel('Portfolio Value');
+t = title('HFAC Portfolio Value Over 2015 and 2016');
+set(t, 'FontSize', 20);
+set(x, 'FontSize', 16);
+set(y, 'FontSize', 16);
+
+%%
+plot(dates, 100*portvalues/portvalues(1)-100);
+hold on
+plot(dates, 100*spval/spval(1)-100);
+x = xlabel('Date');
+y = ylabel('Percent Change (%)');
+t = title('HFAC vs SP500');
+set(t, 'FontSize', 16);
+set(x, 'FontSize', 16);
+set(y, 'FontSize', 16);
+legend('HFAC', 'SP500');

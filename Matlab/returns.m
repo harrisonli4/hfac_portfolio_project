@@ -1,55 +1,33 @@
 data = load('values.csv');
 portval = data(:,2);
+t_days = 252;
 
-dailyreturns = zeros([length(portval)-1 1]);
-
-for i = 2:length(portval)
-    dailyreturns(i-1) = (portval(i)-portval(i-1))/portval(i-1);
-end %populating vector of daily returns
-
+dailyreturns = diff(portval)./portval(1:(end-1)); 
 dailylogreturns = log(dailyreturns + 1);
-yearlyreturns = 252*mean(dailylogreturns);
+yearlyreturns = t_days*mean(dailylogreturns);
 
-logstd = sqrt(252)*std(dailylogreturns);
+logstd = sqrt(t_days)*std(dailylogreturns);
 rfr = log(1+0.0186); %risk free rate for October 28, 2016
 
 simplsharpe = (yearlyreturns-rfr)/logstd
 
-%% 
-ndwnsidvar = 0;
+%% Sortino
+downdailyreturns = dailylogreturns(dailylogreturns < mean(dailylogreturns));
+ndwnsidvar = sum((downdailyreturns - mean(dailylogreturns)).^2);
+ndwnsid = length(downdailyreturns);
+dwnsidstdv = sqrt(t_days*ndwnsidvar/(ndwnsid - 1));
+sortino = (yearlyreturns-rfr)/dwnsidstdv;
 
-for i = 1:length(dailylogreturns)
-    if dailylogreturns(i) < mean(dailylogreturns)
-        ndwnsidvar = ndwnsidvar + (dailylogreturns(i) - mean(dailylogreturns))^2;
-    else 
-        ndwnsidvar = ndwnsidvar;
-    end
-end %calculating downside variance for returns lower than mean
-
-ndwnsid = 0;
-
-for i = 1:length(dailylogreturns)
-    if dailylogreturns(i) < mean(dailylogreturns)
-        ndwnsid = ndwnsid + 1;
-    else 
-        ndwnsid = ndwnsid;
-    end
-end %finding the number of days with returns below the mean
-
-
-dwnsidstdv = sqrt(252)*(ndwnsidvar/(ndwnsid - 1))^(1/2);
-
-dwnsidsharpe = (yearlyreturns-rfr)/dwnsidstdv;
-
-dwnsidsharpesens = zeros([7 1]);
-
-for i = 1:7
-    dwnsidsharpesens(i) = (yearlyreturns - (0.014 + 0.001*i))/dwnsidstdv;
-end
-
+% Output
 simplsharpe
-dwnsidsharpe
-dwnsidsharpesens
+sortino
+
+% dwnsidsharpesens = zeros([7 1]);
+% 
+% for i = 1:7
+%     dwnsidsharpesens(i) = (yearlyreturns - (0.014 + 0.001*i))/dwnsidstdv;
+% end
+% dwnsidsharpesens
 
  %% Treynor Ratio
 sp500 = load('YAHOO-INDEX_GSPC.csv');

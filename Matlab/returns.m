@@ -8,32 +8,19 @@ for i = 2:length(portval)
 end %populating vector of daily returns
 
 dailylogreturns = log(dailyreturns + 1);
+yearlyreturns = 252*mean(dailylogreturns);
 
-yearlyreturns = 0;
+logstd = sqrt(252)*std(dailylogreturns);
+rfr = log(1+0.0186); %risk free rate for October 28, 2016
 
-for i = 1:length(dailylogreturns)
-    yearlyreturns = yearlyreturns + dailylogreturns(i);
-end %calculating years returns from daily returns for 2015
+simplsharpe = (yearlyreturns-rfr)/logstd
 
-meandailyreturn = yearlyreturns/(length(dailylogreturns));
-
-nsimplvar = 0;
-
-for i = 1:length(dailylogreturns)
-    nsimplvar = nsimplvar + (dailylogreturns(i) - meandailyreturn)^2;
-end %calculating simple variance of returns
-
-simplstdv = (nsimplvar/(length(dailylogreturns)-1))^(1/2);
-
-rfr = log(1+0.0186)/252; %risk free rate for October 28, 2016
-
-simplsharpe = (meandailyreturn-rfr)/simplstdv;
-
+%% 
 ndwnsidvar = 0;
 
 for i = 1:length(dailylogreturns)
-    if dailylogreturns(i) < meandailyreturn
-        ndwnsidvar = ndwnsidvar + (dailylogreturns(i) - meandailyreturn)^2;
+    if dailylogreturns(i) < mean(dailylogreturns)
+        ndwnsidvar = ndwnsidvar + (dailylogreturns(i) - mean(dailylogreturns))^2;
     else 
         ndwnsidvar = ndwnsidvar;
     end
@@ -42,7 +29,7 @@ end %calculating downside variance for returns lower than mean
 ndwnsid = 0;
 
 for i = 1:length(dailylogreturns)
-    if dailylogreturns(i) < meandailyreturn
+    if dailylogreturns(i) < mean(dailylogreturns)
         ndwnsid = ndwnsid + 1;
     else 
         ndwnsid = ndwnsid;
@@ -50,21 +37,21 @@ for i = 1:length(dailylogreturns)
 end %finding the number of days with returns below the mean
 
 
-dwnsidstdv = (ndwnsidvar/(ndwnsid - 1))^(1/2);
+dwnsidstdv = sqrt(252)*(ndwnsidvar/(ndwnsid - 1))^(1/2);
 
-dwnsidsharpe = (meandailyreturn-rfr)/dwnsidstdv;
+dwnsidsharpe = (yearlyreturns-rfr)/dwnsidstdv;
 
 dwnsidsharpesens = zeros([7 1]);
 
 for i = 1:7
-    dwnsidsharpesens(i) = (meandailyreturn - (0.014 + 0.001*i))/dwnsidstdv;
+    dwnsidsharpesens(i) = (yearlyreturns - (0.014 + 0.001*i))/dwnsidstdv;
 end
 
 simplsharpe
 dwnsidsharpe
 dwnsidsharpesens
 
-%% Treynor Ratio
+ %% Treynor Ratio
 sp500 = load('YAHOO-INDEX_GSPC.csv');
 spval = sp500(:,5);
 

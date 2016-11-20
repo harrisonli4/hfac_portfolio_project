@@ -69,7 +69,7 @@ if __name__ == '__main__':
     #data = zip(string_dates, valuelist)
 
     a = csv.writer(my_csv)
-    for date,value in values.items():
+    for date,value in sorted(values.items()):
         if date == '2016-11-01':
             print ("End value:",value)
         if date == '2014-12-31':

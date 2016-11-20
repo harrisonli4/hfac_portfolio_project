@@ -1,5 +1,7 @@
-data = load('values.csv');
-portval = data(:,2);
+data = importdata('values.csv');
+portvalues = data.data;
+dates = datetime(data.rowheaders);
+
 t_days = 252;
 
 dailyreturns = diff(portval)./portval(1:(end-1)); 
@@ -59,7 +61,7 @@ set(t, 'FontSize', 20);
 set(x, 'FontSize', 16);
 set(y, 'FontSize', 16);
 
-%%
+ %%
 plot(dates, 100*portvalues/portvalues(1)-100);
 hold on
 plot(dates, 100*spval/spval(1)-100);
